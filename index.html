@@ -37,9 +37,20 @@ button,input,select{font:inherit;color:var(--ink);border:1px solid var(--ink);bo
 @media(max-width:600px){.week-toggle{flex-wrap:wrap;gap:4px 8px}.week-toggle .week-meta{width:100%;order:3}.week-toggle .week-total{font-size:13px}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+#authGate[hidden],#mainApp[hidden]{display:none!important}
+.auth-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}
+.auth-card{width:min(100%,430px);padding:24px;background:#FBFAF7;border:2px solid #342D23;box-shadow:5px 6px 0 #384C27;border-radius:7px}
+.auth-card h2{margin:0 0 9px;color:#384C27}.auth-card input{width:100%;margin:6px 0}.auth-card button{width:100%;margin-top:10px}
+.auth-note{font-size:12px;color:#766F63}.cloud-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:9px 0 16px;color:#384C27;font-size:12px}
+.cloud-status button{padding:5px 9px;font-size:12px}
+</style>
 </head>
 <body>
-<div class="wrap">
+<section id="authGate" class="auth-gate"><div class="auth-card"><p class="eyebrow">sổ chi tiêu cá nhân</p><h2>Đăng nhập để đồng bộ ☁</h2><p class="auth-note">Dùng cùng email và mật khẩu trên điện thoại, máy tính. Dữ liệu chỉ hiển thị trong tài khoản của bro.</p><form id="authForm"><input type="email" id="authEmail" autocomplete="email" placeholder="Email" required><input type="password" id="authPassword" autocomplete="current-password" minlength="6" placeholder="Mật khẩu (ít nhất 6 ký tự)" required><button type="submit" class="primary" id="loginBtn">Đăng nhập</button></form><button id="signupBtn" type="button">Tạo tài khoản mới</button><p class="auth-note" id="authMessage">Nếu đăng ký mới, Supabase có thể yêu cầu xác nhận qua email.</p></div></section>
+<div class="wrap" id="mainApp" hidden>
+<div class="cloud-status"><strong id="syncStatus">☁ Đang kết nối…</strong><span id="signedEmail"></span><button type="button" id="syncNow">↻ Đồng bộ</button><button type="button" id="signOut">Đăng xuất</button></div>
   <div class="top">
     <div class="title-wrap"><p class="eyebrow">sổ tiền cá nhân</p><h1>Chi tiêu của Phong</h1></div>
     <div class="month"><button id="prev" aria-label="Tháng trước">‹</button><input id="month" type="month" aria-label="Chọn tháng"><button id="next" aria-label="Tháng sau">›</button></div>
@@ -109,8 +120,8 @@ button,input,select{font:inherit;color:var(--ink);border:1px solid var(--ink);bo
 </div>
 <script>
 const KEY='minimal-expense-tracker-v1';
-const EMBEDDED_DB={"months":{}};
-let db=JSON.parse(localStorage.getItem(KEY)||JSON.stringify(EMBEDDED_DB));
+const EMBEDDED_DB={months:{},categories:['Ăn uống','Giải trí','Học tập','Mua sắm','Sức khoẻ','Tiện ích','Di chuyển','Khác']};
+let db=structuredClone(EMBEDDED_DB);
 const DEFAULT_CATEGORIES=['Ăn uống','Giải trí','Học tập','Mua sắm','Sức khoẻ','Tiện ích','Di chuyển','Khác'];
 function initializeCategories(){
  const existing=Object.values(db.months||{}).flatMap(m=>(m.expenses||[]).map(x=>x.category)).filter(Boolean);
@@ -124,7 +135,12 @@ const today=new Date(), pad=n=>String(n).padStart(2,'0');
 $('month').value=`${today.getFullYear()}-${pad(today.getMonth()+1)}`;
 $('date').value=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
 function current(){let k=$('month').value;if(!db.months[k])db.months[k]={income:[],expenses:[]};return db.months[k]}
-function save(){localStorage.setItem(KEY,JSON.stringify(db));const st=$('saveStatus');if(st){st.textContent='Đã lưu lúc '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}}
+function save(){
+ if(!activeUser)return;
+ localStorage.setItem('phong-expense-cloud-'+activeUser.id,JSON.stringify(db));
+ const st=$('saveStatus');if(st)st.textContent='Đang lưu lên đám mây…';
+ scheduleCloudSave();
+}
 function num(v){return Number(String(v).replace(/[^\d]/g,''))||0}
 function formatInput(el){const digits=el.value.replace(/\D/g,'');el.value=digits?Number(digits).toLocaleString('vi-VN'):'';}
 ['incomeAmount','expenseAmount','withdrawFee'].forEach(id=>{$(id).addEventListener('input',e=>formatInput(e.target));});
@@ -279,6 +295,62 @@ function refreshCalendarDay(){
 setInterval(refreshCalendarDay, 15000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshCalendarDay()});
 window.addEventListener('focus',refreshCalendarDay);
-$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.months)throw 0;db=x;initializeCategories();save();render();alert('Đã khôi phục dữ liệu.')}catch{alert('File backup không hợp lệ.')}};r.readAsText(f)};render();
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.months)throw 0;db=x;initializeCategories();save();render();alert('Đã khôi phục dữ liệu.')}catch{alert('File backup không hợp lệ.')}};r.readAsText(f)};
+// --- Đồng bộ Supabase. RLS giới hạn mỗi tài khoản vào đúng bản ghi riêng. ---
+const SUPABASE_URL='https://ojjzdhkdmvgegdvlvmrm.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_JoCupAY95g3R_SylOnu2JA_h0405dY_';
+const cloud=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+let activeUser=null, syncTimer=null, syncing=false, pending=false, initialLoading=false;
+function cloudStatus(message){$('syncStatus').textContent=message}
+function scheduleCloudSave(){
+ pending=true;cloudStatus('☁ Chưa đồng bộ');
+ clearTimeout(syncTimer);syncTimer=setTimeout(pushCloud,650);
+}
+async function pushCloud(){
+ if(!activeUser||syncing)return;
+ syncing=true;pending=false;const snapshot=JSON.stringify(db),uid=activeUser.id;
+ cloudStatus('☁ Đang lưu…');
+ const {error}=await cloud.from('expense_tracker_data').upsert({user_id:uid,data:JSON.parse(snapshot),updated_at:new Date().toISOString()},{onConflict:'user_id'});
+ syncing=false;
+ if(error){pending=true;cloudStatus('⚠ Lưu lỗi: '+error.message);$('saveStatus').textContent='Lỗi đồng bộ, còn bản trên máy';return}
+ if(uid!==activeUser?.id)return;
+ cloudStatus('✓ Đã lưu trên Supabase');$('saveStatus').textContent='Đã lưu lên đám mây lúc '+new Date().toLocaleTimeString('vi-VN');
+ if(pending||JSON.stringify(db)!==snapshot){clearTimeout(syncTimer);syncTimer=setTimeout(pushCloud,200)}
+}
+async function loadCloud(){
+ if(!cloud||!activeUser)return;
+ initialLoading=true;cloudStatus('☁ Đang tải dữ liệu…');
+ const {data,error}=await cloud.from('expense_tracker_data').select('data').eq('user_id',activeUser.id).maybeSingle();
+ if(error){initialLoading=false;cloudStatus('⚠ Không tải được: '+error.message);$('mainApp').hidden=true;return}
+ db=data?.data && typeof data.data==='object' && data.data.months ? data.data : structuredClone(EMBEDDED_DB);
+ initializeCategories();initialLoading=false;
+ $('mainApp').hidden=false;render(); // lưu dữ liệu đã tải trước khi hiển thị
+ cloudStatus('✓ Đã kết nối Supabase');
+}
+async function setSignedIn(user){
+ if(!user || user.is_anonymous || !user.email){activeUser=null;$('mainApp').hidden=true;$('authGate').hidden=false;return}
+ if(activeUser?.id===user.id)return;
+ activeUser=user;$('signedEmail').textContent=user.email||'';
+ $('authGate').hidden=true;await loadCloud();
+}
+$('authForm').onsubmit=async e=>{
+ e.preventDefault();if(!cloud)return $('authMessage').textContent='Không tải được thư viện Supabase. Kiểm tra mạng.';
+ $('authMessage').textContent='Đang đăng nhập…';
+ const {data,error}=await cloud.auth.signInWithPassword({email:$('authEmail').value.trim(),password:$('authPassword').value});
+ if(error){$('authMessage').textContent='Đăng nhập chưa thành công: '+error.message;return}
+ $('authMessage').textContent='Đăng nhập thành công';await setSignedIn(data.user);
+};
+$('signupBtn').onclick=async()=>{
+ if(!cloud)return;$('authMessage').textContent='Đang đăng ký…';
+ const {data,error}=await cloud.auth.signUp({email:$('authEmail').value.trim(),password:$('authPassword').value});
+ $('authMessage').textContent=error?'Đăng ký lỗi: '+error.message:(!data.session?'Kiểm tra email để xác nhận tài khoản rồi đăng nhập.':'Đã tạo tài khoản.');
+ if(data.session)await setSignedIn(data.user);
+};
+$('signOut').onclick=async()=>{if(pending)await pushCloud();await cloud.auth.signOut();activeUser=null;$('mainApp').hidden=true;$('authGate').hidden=false;db=structuredClone(EMBEDDED_DB)};
+$('syncNow').onclick=async()=>{if(pending){await pushCloud()}else if(confirm('Tải lại dữ liệu từ Supabase? Các thay đổi chưa đồng bộ có thể bị mất.'))await loadCloud()};
+if(cloud){
+ cloud.auth.getUser().then(({data})=>setSignedIn(data?.user||null)).catch(e=>$('authMessage').textContent='Không kết nối được Supabase: '+e.message);
+ cloud.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT')setSignedIn(null);else if(event==='SIGNED_IN'&&session?.user&&!activeUser)setTimeout(()=>setSignedIn(session.user),0)});
+}else $('authMessage').textContent='Không thể tải Supabase. Kiểm tra kết nối Internet.';
 </script>
 </body></html>
