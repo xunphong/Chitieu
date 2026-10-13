@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sổ chi tiêu của Phong</title>
+<style>
+:root{--paper:#F6F3EB;--paper-light:#FBFAF7;--lime:#DCE99D;--lemon:#E8F19F;--green:#98C96E;--coral:#EF7F7A;--ink:#342D23;--forest:#384C27;--muted:#766F63;--line:#D9D2C4;--shadow:3px 4px 0 rgba(52,45,35,.12)}
+*{box-sizing:border-box}body{margin:0;min-width:320px;background:var(--paper);color:var(--ink);font:14px/1.45 ui-rounded,"Avenir Next",system-ui,-apple-system,"Segoe UI",sans-serif;background-image:radial-gradient(rgba(52,45,35,.07) .65px,transparent .65px);background-size:9px 9px}
+.wrap{max-width:1100px;margin:auto;padding:36px 20px 76px}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:26px}.eyebrow{margin:0 0 3px;color:var(--forest);font-size:11px;letter-spacing:.14em;font-weight:800;text-transform:uppercase}.title-wrap{position:relative;padding-left:15px}.title-wrap:before{content:"";position:absolute;left:0;top:1px;width:5px;height:47px;background:var(--coral);transform:rotate(2deg)}h1{font-size:clamp(26px,4vw,37px);letter-spacing:-.06em;line-height:.96;margin:0;color:var(--forest)}.month{display:flex;align-items:center;gap:7px;background:var(--paper-light);padding:6px;border:1px solid var(--ink);box-shadow:2px 3px 0 var(--ink);transform:rotate(.4deg)}
+button,input,select{font:inherit;color:var(--ink);border:1px solid var(--ink);border-radius:3px;background:var(--paper-light);padding:10px 11px;transition:transform .15s,background .15s,box-shadow .15s}button{cursor:pointer;font-weight:750}button:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--ink)}button:active{transform:translate(1px,1px);box-shadow:none}input:focus,select:focus{outline:3px solid rgba(152,201,110,.45);outline-offset:1px}.month button{border:0;padding:5px 10px;font-size:20px;line-height:1;background:transparent;box-shadow:none}.month input{width:141px;border:0;background:transparent;padding:5px}.primary{background:var(--forest);color:var(--paper-light);border-color:var(--forest);box-shadow:2px 3px 0 #202c16}.primary:hover{background:#4b6635;box-shadow:3px 4px 0 #202c16}
+.summary{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:13px;margin-bottom:18px}.card{position:relative;background:var(--paper-light);border:1px solid var(--ink);border-radius:2px;padding:17px;box-shadow:var(--shadow)}.summary .card{min-height:124px;overflow:hidden}.summary .card:after{content:"";position:absolute;top:0;right:0;width:36px;height:36px;background:linear-gradient(135deg,transparent 49%,rgba(52,45,35,.12) 50%,rgba(52,45,35,.12) 52%,var(--paper) 53%)}.summary .card:nth-child(1){background:var(--lemon);transform:rotate(-.45deg)}.summary .card:nth-child(2){background:#EEF3D3;transform:rotate(.35deg)}.summary .card:nth-child(3){background:#FBE4DB;transform:rotate(-.2deg)}.label{color:var(--forest);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px}.value{font-size:clamp(22px,3vw,32px);line-height:1;font-weight:850;letter-spacing:-.055em;font-variant-numeric:tabular-nums}.summary .card:nth-child(3) .value{color:#a53f3a}
+.section{margin-top:18px}.section.card{padding:19px 18px 17px}.section:nth-of-type(2){border-top:5px solid var(--green)}.section:nth-of-type(3){border-top:5px solid var(--coral)}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.section h2{font-size:18px;letter-spacing:-.035em;margin:0;color:var(--forest)}.section h2:before{content:"✦";font-size:13px;margin-right:7px;color:var(--coral)}.form{display:grid;grid-template-columns:124px 1fr 138px 137px 138px auto;gap:8px;margin-bottom:14px}.income-form{grid-template-columns:1fr 143px 155px 143px auto}.form input,.form select{width:100%;min-width:0;background:#fffdf8}.form button{white-space:nowrap}
+.table-wrap{overflow-x:auto;border:1px solid var(--ink);background:#fffdf8}table{width:100%;min-width:610px;border-collapse:collapse}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}th{color:var(--forest);background:#E7EDCE;font-size:10px;letter-spacing:.1em;font-weight:850;text-transform:uppercase}tbody tr{transition:background .14s}tbody tr:hover{background:#f5f1e5}tr:last-child td{border-bottom:0}.money{text-align:right;font-variant-numeric:tabular-nums;font-weight:750}.actions{text-align:right;white-space:nowrap}.icon{padding:4px 7px;border:0;background:transparent;box-shadow:none;color:var(--forest);font-size:12px}.icon:hover{background:var(--lime);box-shadow:none}.empty{text-align:center;color:var(--muted);padding:27px}.danger{color:#b04c47}.danger:hover{background:#FAD9D4}
+.chart-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:18px}.chart-grid .card{padding:18px}.chart-grid .card:first-child{border-top:4px solid var(--green)}.chart-grid .card:last-child{border-top:4px solid var(--coral)}.chart-box{height:310px;position:relative}.savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding:12px 0 0}.saved{color:var(--muted);font-size:12px}.savebar .primary{padding:8px 14px}.bottom{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-top:18px;padding-top:15px;border-top:1px dashed var(--muted);color:var(--muted);font-size:12px}.bottom>span{max-width:600px}.bottom button{font-size:12px;padding:7px 9px;background:transparent;box-shadow:none}.bottom button:hover{background:var(--lime);box-shadow:none}
+@media(max-width:780px){.wrap{padding:25px 13px 55px}.top{align-items:flex-start;flex-direction:column;margin-bottom:22px}.summary{grid-template-columns:1fr;gap:10px}.summary .card{min-height:99px}.form,.income-form{grid-template-columns:1fr 1fr}.form input:nth-child(2),.form button,.income-form input:first-child{grid-column:span 2}.chart-grid{grid-template-columns:1fr}.chart-box{height:260px}.bottom{flex-direction:column}.bottom>div{display:flex;gap:5px;align-items:center}.hide-sm{display:none}}
+@media(max-width:420px){.month{width:100%;justify-content:space-between}.month input{flex:1}.section.card,.chart-grid .card{padding:14px}.form,.income-form{grid-template-columns:1fr}.form input:nth-child(2),.form button,.income-form input:first-child{grid-column:span 1}.value{font-size:29px}}
+
+/* Trình chỉnh sửa trực quan */
+.editable-row{cursor:pointer}.editable-row:hover{background:#edf3d8}.editable-row:focus-visible{outline:3px solid var(--green);outline-offset:-3px}
+.editable-row .actions button{cursor:pointer}.edit-tip{font-size:11px;color:var(--muted);margin-top:4px}
+.modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(34,40,25,.54);display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.modal-backdrop.open{display:flex}.edit-panel{width:min(100%,520px);max-height:min(90vh,790px);overflow:auto;background:var(--paper-light);border:2px solid var(--ink);box-shadow:7px 8px 0 var(--forest);padding:22px;border-radius:6px}
+.edit-head{display:flex;align-items:start;justify-content:space-between;gap:12px;margin-bottom:18px}.edit-head h2{font-size:22px;margin:2px 0 0;color:var(--forest)}.edit-head .eyebrow{margin:0}.close-edit{border:0;background:transparent;font-size:25px;padding:0 8px;line-height:1;box-shadow:none}
+.edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.edit-field[hidden]{display:none!important}.edit-field{display:flex;flex-direction:column;gap:5px;min-width:0}.edit-field.full{grid-column:1/-1}.edit-field label{font-size:12px;font-weight:800;color:var(--forest)}.edit-field input,.edit-field select{width:100%;background:white;min-height:44px;font-size:15px}.edit-panel .help{font-size:12px;color:var(--muted);margin:9px 0 0}
+.edit-footer{display:flex;gap:9px;justify-content:space-between;margin-top:22px;padding-top:15px;border-top:1px solid var(--line)}.edit-footer .right{display:flex;gap:8px}.edit-footer button{padding:10px 13px}.edit-footer .delete-edit{background:#f9e1dd;color:#a53f3a;border-color:#bd6660}
+@media(max-width:420px){.edit-panel{padding:16px}.edit-fields{grid-template-columns:1fr}.edit-field.full{grid-column:1}.edit-footer{flex-wrap:wrap}.edit-footer .right{flex:1;justify-content:flex-end}}
+/* Quản lý danh mục */
+.category-manager{border-top:5px solid var(--green)}.manage-toggle{background:var(--lime);padding:8px 12px}.category-manager[hidden]{display:none}.cat-add{display:flex;gap:9px;margin:12px 0 16px}.cat-add input{flex:1;min-width:0;background:white}.cat-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}.cat-item{display:flex;align-items:center;gap:8px;background:#fffdf8;border:1px solid var(--line);padding:9px;border-radius:5px}.cat-item .cat-name{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:700}.cat-item button{padding:5px 7px;font-size:12px;flex-shrink:0}.cat-usage{font-size:11px;color:var(--muted);display:block;font-weight:400}.cat-info{color:var(--muted);font-size:12px;margin:8px 0}.section-head{gap:10px;flex-wrap:wrap}
+@media(max-width:420px){.cat-add{flex-direction:column}.cat-list{grid-template-columns:1fr}}
+/* Thu gọn chi tiêu theo tuần */
+.week-controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:0 0 12px}.week-controls button{font-size:12px;padding:7px 10px;background:#e7edce}
+.week-heading td{padding:0!important;background:#e9efd9;border-top:1px solid var(--ink)}
+.week-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:0;border-radius:0;box-shadow:none!important;background:transparent;padding:12px 13px;color:var(--forest)}
+.week-toggle:hover{background:#dce99d;transform:none;box-shadow:none}.week-toggle .week-title{font-weight:850}.week-toggle .week-meta{font-size:12px;color:var(--muted)}
+.week-toggle .week-total{margin-left:auto;font-weight:850;white-space:nowrap}.week-toggle .chevron{font-size:16px;width:18px;text-align:center}
+@media(max-width:600px){.week-toggle{flex-wrap:wrap;gap:4px 8px}.week-toggle .week-meta{width:100%;order:3}.week-toggle .week-total{font-size:13px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="title-wrap"><p class="eyebrow">sổ tiền cá nhân</p><h1>Chi tiêu của Phong</h1></div>
+    <div class="month"><button id="prev" aria-label="Tháng trước">‹</button><input id="month" type="month" aria-label="Chọn tháng"><button id="next" aria-label="Tháng sau">›</button></div>
+  </div>
+  <div class="summary">
+    <div class="card"><div class="label">Tiền còn dùng</div><div class="value" id="cashAvailable">0 ₫</div></div>
+    <div class="card"><div class="label">Chi tiêu tháng này</div><div class="value" id="expenseTotal">0 ₫</div></div>
+    <div class="card"><div class="label">Dư nợ hiện tại</div><div class="value" id="debtTotal">0 ₫</div></div>
+  </div>
+  <div class="section card">
+    <div class="section-head"><h2>Tiền vào</h2><span class="edit-tip">Chạm vào dòng để sửa ✎</span></div>
+    <form id="incomeForm" class="form income-form">
+      <input id="incomeName" placeholder="Ví dụ: Lương / Rút thẻ" required>
+      <input id="incomeAmount" type="text" inputmode="numeric" placeholder="Số tiền" required>
+      <select id="incomeType"><option value="income">Thu nhập</option><option value="debt">Rút thẻ / Vay</option><option value="repay">Trả nợ</option></select>
+      <input id="withdrawFee" type="text" inputmode="numeric" placeholder="Phí rút (nếu có)">
+      <button class="primary">+ Thêm</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Khoản</th><th>Loại</th><th class="money">Số tiền</th><th></th></tr></thead><tbody id="incomeRows"></tbody></table></div>
+  </div>
+  <div class="section card">
+    <div class="section-head"><h2>Chi tiêu</h2><span class="edit-tip">Chạm vào dòng để sửa ✎</span></div>
+    <form id="expenseForm" class="form">
+      <input id="date" type="date" required>
+      <input id="expenseName" placeholder="Khoản chi" required>
+      <input id="expenseAmount" type="text" inputmode="numeric" placeholder="Số tiền" required>
+      <select id="source"><option>Ngân hàng</option><option>Tiền mặt</option><option>Ví điện tử</option><option>Thẻ tín dụng</option></select>
+      <select id="category"><option>Ăn uống</option><option>Giải trí</option><option>Học tập</option><option>Mua sắm</option><option>Sức khoẻ</option><option>Tiện ích</option><option>Di chuyển</option><option>Khác</option></select>
+      <button class="primary">+ Thêm</button>
+    </form>
+    <div class="week-controls"><span class="saved">Hiển thị theo tuần</span><button type="button" id="expandWeeks">Mở tất cả</button><button type="button" id="collapseWeeks">Thu gọn tất cả</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Ngày</th><th>Khoản</th><th class="hide-sm">Mục</th><th class="hide-sm">Nguồn</th><th class="money">Số tiền</th><th></th></tr></thead><tbody id="expenseRows"></tbody></table></div>
+  </div>
+  <div class="section card category-manager" id="categoryManageSection">
+    <div class="section-head"><h2>Quản lý danh mục</h2><button type="button" class="manage-toggle" id="toggleCategories" aria-expanded="false">⚙ Quản lý danh mục ▾</button></div>
+    <div id="categoryManageContent" hidden>
+      <p class="cat-info">Tạo danh mục riêng như Tiền trọ, Trả góp, Gia đình... Đổi tên sẽ cập nhật cả giao dịch cũ. Danh mục đang được sử dụng cần chuyển khoản chi sang danh mục khác trước khi xóa.</p>
+      <form class="cat-add" id="addCategoryForm"><input id="newCategoryName" maxlength="60" placeholder="Tên danh mục mới (ví dụ: Tiền trọ)" required><button class="primary" type="submit">+ Thêm danh mục</button></form>
+      <div class="cat-list" id="categoryList"></div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="card"><div class="section-head"><h2>Chi tiêu theo danh mục</h2></div><div class="chart-box"><canvas id="categoryChart"></canvas></div></div>
+    <div class="card"><div class="section-head"><h2>Tổng quan tháng</h2></div><div class="chart-box"><canvas id="overviewChart"></canvas></div></div>
+  </div>
+  <div class="savebar"><span class="saved" id="saveStatus">Đã tự động lưu</span><button id="saveBtn" class="primary">Lưu ngay</button></div>
+  <div class="bottom"><span>Tự động lưu • Nợ được chuyển sang tháng sau • Trả nợ sẽ làm giảm dư nợ • Phí rút được cộng vào nợ</span><div><button id="exportBtn">Xuất backup</button> <button id="importBtn">Nhập backup</button> <input id="importFile" type="file" accept=".json" hidden></div></div>
+</div>
+
+<div class="modal-backdrop" id="editModal" role="presentation">
+ <div class="edit-panel" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+  <div class="edit-head"><div><p class="eyebrow">chỉnh sửa trực tiếp</p><h2 id="editTitle">Sửa khoản chi</h2></div><button type="button" class="close-edit" id="closeEdit" aria-label="Đóng">×</button></div>
+  <form id="editForm">
+   <div class="edit-fields">
+    <div class="edit-field full"><label for="editName">Tên khoản</label><input id="editName" required placeholder="Tên khoản"></div>
+    <div class="edit-field"><label for="editAmount">Số tiền (₫)</label><input id="editAmount" inputmode="numeric" required placeholder="Ví dụ: 150.000"></div>
+    <div class="edit-field" id="editDateField"><label for="editDate">Ngày chi</label><input id="editDate" type="date"></div>
+    <div class="edit-field" id="editSourceField"><label for="editSource">Nguồn tiền</label><select id="editSource"></select></div>
+    <div class="edit-field" id="editCategoryField"><label for="editCategory">Danh mục</label><select id="editCategory"></select></div>
+    <div class="edit-field" id="editTypeField" hidden><label for="editType">Loại tiền vào</label><select id="editType"><option value="income">Thu nhập</option><option value="debt">Rút thẻ / Vay</option><option value="repay">Trả nợ</option></select></div>
+    <div class="edit-field" id="editFeeField" hidden><label for="editFee">Phí rút (₫)</label><input id="editFee" inputmode="numeric" placeholder="0"></div>
+   </div>
+   <p class="help">Thay đổi bất kỳ thông tin nào rồi bấm Lưu. Các số liệu sẽ tự cập nhật.</p>
+   <div class="edit-footer"><button type="button" class="delete-edit" id="deleteFromEdit">Xóa khoản</button><div class="right"><button type="button" id="cancelEdit">Hủy</button><button class="primary" type="submit">✓ Lưu thay đổi</button></div></div>
+  </form>
+ </div>
+</div>
+<script>
+const KEY='minimal-expense-tracker-v1';
+const EMBEDDED_DB={"months":{}};
+let db=JSON.parse(localStorage.getItem(KEY)||JSON.stringify(EMBEDDED_DB));
+const DEFAULT_CATEGORIES=['Ăn uống','Giải trí','Học tập','Mua sắm','Sức khoẻ','Tiện ích','Di chuyển','Khác'];
+function initializeCategories(){
+ const existing=Object.values(db.months||{}).flatMap(m=>(m.expenses||[]).map(x=>x.category)).filter(Boolean);
+ db.categories=[...new Set([...(Array.isArray(db.categories)?db.categories:DEFAULT_CATEGORIES),...existing])];
+}
+initializeCategories();
+let categoryChart=null, overviewChart=null;
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND',maximumFractionDigits:0}).format(n||0);
+const today=new Date(), pad=n=>String(n).padStart(2,'0');
+$('month').value=`${today.getFullYear()}-${pad(today.getMonth()+1)}`;
+$('date').value=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+function current(){let k=$('month').value;if(!db.months[k])db.months[k]={income:[],expenses:[]};return db.months[k]}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));const st=$('saveStatus');if(st){st.textContent='Đã lưu lúc '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}}
+function num(v){return Number(String(v).replace(/[^\d]/g,''))||0}
+function formatInput(el){const digits=el.value.replace(/\D/g,'');el.value=digits?Number(digits).toLocaleString('vi-VN'):'';}
+['incomeAmount','expenseAmount','withdrawFee'].forEach(id=>{$(id).addEventListener('input',e=>formatInput(e.target));});
+function renderCharts(d,income,cashFromDebt,repayments,exp,carriedDebt){
+ if(typeof Chart==='undefined')return;const cats={};d.expenses.forEach(x=>cats[x.category]=(cats[x.category]||0)+x.amount);const labels=Object.keys(cats),values=Object.values(cats);const chartColors=['#98C96E','#E8F19F','#EF7F7A','#384C27','#DCE99D','#C9B89D','#B9D7A4','#E5A89F'];
+ if(categoryChart)categoryChart.destroy();categoryChart=new Chart($('categoryChart'),{type:'bar',data:{labels:labels.length?labels:['Chưa có chi tiêu'],datasets:[{data:values.length?values:[0],backgroundColor:labels.length?chartColors:'#DCE99D',borderColor:'#384C27',borderWidth:1,borderRadius:2,maxBarThickness:52}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#342D23',callbacks:{label:c=>money(c.raw)}}},scales:{x:{grid:{display:false},ticks:{color:'#766F63'}},y:{beginAtZero:true,grid:{color:'rgba(52,45,35,.11)'},ticks:{color:'#766F63',callback:v=>new Intl.NumberFormat('vi-VN',{notation:'compact'}).format(v)}}}}});
+ if(overviewChart)overviewChart.destroy();overviewChart=new Chart($('overviewChart'),{type:'doughnut',data:{labels:['Tiền còn dùng','Chi tiêu','Nợ hiện tại'],datasets:[{data:[Math.max(0,income+cashFromDebt-repayments-exp),exp,carriedDebt],backgroundColor:['#98C96E','#EF7F7A','#384C27'],borderColor:'#FBFAF7',borderWidth:4,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#342D23',boxWidth:12,padding:16,font:{family:'system-ui',size:11}}},tooltip:{backgroundColor:'#342D23',callbacks:{label:c=>c.label+': '+money(c.raw)}}}}});
+}
+// Tuần tính từ thứ Hai tới Chủ nhật, theo ngày thực tế của từng khoản chi.
+const expandedWeeks={};
+function localISODate(){const n=new Date();return `${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`}
+function weekDetails(dateText){
+ const raw=/^\d{4}-\d{2}-\d{2}$/.test(String(dateText||''))?dateText:$('month').value+'-01';
+ const [y,m,d]=raw.split('-').map(Number);
+ const start=new Date(y,m-1,d);start.setDate(start.getDate()-((start.getDay()+6)%7));
+ const end=new Date(start);end.setDate(start.getDate()+6);
+ const iso=v=>`${v.getFullYear()}-${pad(v.getMonth()+1)}-${pad(v.getDate())}`;
+ const short=v=>`${pad(v.getDate())}/${pad(v.getMonth()+1)}`;
+ return {key:iso(start),label:`${short(start)} – ${short(end)}`};
+}
+function renderWeeklyExpenses(expenses){
+ if(!expenses.length)return '<tr><td colspan="6" class="empty">Chưa có khoản chi</td></tr>';
+ const groups=new Map();
+ expenses.forEach((x,i)=>{const w=weekDetails(x.date);if(!groups.has(w.key))groups.set(w.key,{...w,items:[],total:0});const g=groups.get(w.key);g.items.push({x,i});g.total+=Number(x.amount)||0});
+ const month=$('month').value;
+ if(!expandedWeeks[month])expandedWeeks[month]={};
+ const state=expandedWeeks[month];
+ const todayWeek=weekDetails(localISODate()).key;
+ return [...groups.values()].sort((a,b)=>b.key.localeCompare(a.key)).map(g=>{
+  if(!(g.key in state))state[g.key]=(g.key===todayWeek);
+  const open=state[g.key];
+  const heading=`<tr class="week-heading"><td colspan="6"><button type="button" class="week-toggle" aria-expanded="${open}" onclick="toggleWeek('${g.key}')"><span class="chevron">${open?'▾':'▸'}</span><span class="week-title">Tuần ${g.label}</span><span class="week-meta">${g.items.length} khoản chi</span><span class="week-total">${money(g.total)}</span></button></td></tr>`;
+  if(!open)return heading;
+  const rows=g.items.sort((a,b)=>String(b.x.date).localeCompare(String(a.x.date))).map(({x,i})=>`<tr class="editable-row" tabindex="0" role="button" aria-label="Sửa ${esc(x.name)}" onclick="editExpense(${i})" onkeydown="if(event.key==='Enter'){editExpense(${i})}"><td>${esc((x.date||'').split('-').reverse().slice(0,2).join('/'))}</td><td>${esc(x.name)}</td><td class="hide-sm">${esc(x.category)}</td><td class="hide-sm">${esc(x.source)}</td><td class="money">${money(x.amount)}</td><td class="actions"><button class="icon" onclick="event.stopPropagation();editExpense(${i})">✎ Sửa</button><button class="icon danger" onclick="event.stopPropagation();delExpense(${i})">×</button></td></tr>`).join('');
+  return heading+rows;
+ }).join('');
+}
+window.toggleWeek=key=>{const month=$('month').value;const s=expandedWeeks[month]||(expandedWeeks[month]={});s[key]=!s[key];render()};
+function setAllWeeks(open){const m=$('month').value,s=expandedWeeks[m]||(expandedWeeks[m]={});current().expenses.forEach(x=>s[weekDetails(x.date).key]=open);render()}
+$('expandWeeks').onclick=()=>setAllWeeks(true);
+$('collapseWeeks').onclick=()=>setAllWeeks(false);
+function render(){renderCategoryControls();const d=current();d.income.forEach(x=>{if(!x.type)x.type=/rút|vay|thẻ/i.test(x.name)?'debt':'income';});const income=d.income.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0);const borrowed=d.income.filter(x=>x.type==='debt').reduce((s,x)=>s+x.amount+(x.fee||0),0);const repayments=d.income.filter(x=>x.type==='repay').reduce((s,x)=>s+x.amount,0);const cashFromDebt=d.income.filter(x=>x.type==='debt').reduce((s,x)=>s+x.amount,0);const exp=d.expenses.reduce((s,x)=>s+x.amount,0);const key=$('month').value;const keys=Object.keys(db.months).filter(k=>k<=key).sort();let carriedDebt=0;keys.forEach(k=>{const m=db.months[k];(m.income||[]).forEach(x=>{if(!x.type)x.type=/rút|vay|thẻ/i.test(x.name)?'debt':'income';if(x.type==='debt')carriedDebt+=x.amount+(x.fee||0);if(x.type==='repay')carriedDebt-=x.amount;});});carriedDebt=Math.max(0,carriedDebt);$('cashAvailable').textContent=money(income+cashFromDebt-repayments-exp);$('expenseTotal').textContent=money(exp);$('debtTotal').textContent=money(carriedDebt);$('incomeRows').innerHTML=d.income.length?d.income.map((x,i)=>`<tr class="editable-row" tabindex="0" role="button" aria-label="Sửa ${esc(x.name)}" onclick="editIncome(${i})" onkeydown="if(event.key==='Enter'){editIncome(${i})}"><td>${esc(x.name)}${x.fee?` <span style="color:var(--muted);font-size:12px">(phí ${money(x.fee)})</span>`:''}</td><td>${x.type==='debt'?'Rút thẻ / Vay':x.type==='repay'?'Trả nợ':'Thu nhập'}</td><td class="money">${money(x.amount)}</td><td class="actions"><button class="icon" onclick="event.stopPropagation();editIncome(${i})">✎ Sửa</button><button class="icon danger" onclick="event.stopPropagation();delIncome(${i})">×</button></td></tr>`).join(''):`<tr><td colspan="4" class="empty">Chưa có tiền vào</td></tr>`;$('expenseRows').innerHTML=renderWeeklyExpenses(d.expenses);renderCharts(d,income,cashFromDebt,repayments,exp,carriedDebt);save();}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+// Danh mục dùng chung cho mọi tháng và lưu trong cùng bản sao lưu dữ liệu.
+function renderCategoryControls(){
+ const select=$('category'), old=select.value;
+ select.innerHTML='';
+ db.categories.forEach(name=>select.add(new Option(name,name)));
+ if(db.categories.includes(old))select.value=old;
+ const counts=new Map(db.categories.map(x=>[x,0]));
+ Object.values(db.months).forEach(m=>(m.expenses||[]).forEach(x=>counts.set(x.category,(counts.get(x.category)||0)+1)));
+ const list=$('categoryList');
+ list.innerHTML='';
+ db.categories.forEach((name,index)=>{
+  const item=document.createElement('div');item.className='cat-item';
+  const label=document.createElement('div');label.className='cat-name';label.textContent=name;
+  const usage=document.createElement('span');usage.className='cat-usage';usage.textContent=`${counts.get(name)||0} khoản chi`;
+  label.append(usage);
+  const edit=document.createElement('button');edit.type='button';edit.textContent='✎ Sửa';edit.setAttribute('aria-label','Đổi tên '+name);
+  edit.onclick=()=>renameCategory(index);
+  const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.className='danger';remove.setAttribute('aria-label','Xóa '+name);
+  remove.onclick=()=>deleteCategory(index);
+  item.append(label,edit,remove);list.append(item);
+ });
+}
+function renameCategory(index){
+ const old=db.categories[index];if(old===undefined)return;
+ const name=prompt('Đổi tên danh mục:',old)?.trim();if(name===undefined||name===old)return;
+ if(!name){alert('Tên danh mục không được để trống.');return}
+ if(db.categories.some((x,i)=>i!==index&&x.toLocaleLowerCase('vi')===name.toLocaleLowerCase('vi'))){alert('Danh mục này đã tồn tại.');return}
+ db.categories[index]=name;
+ Object.values(db.months).forEach(m=>(m.expenses||[]).forEach(x=>{if(x.category===old)x.category=name}));
+ if($('editModal').classList.contains('open')&&$('editCategory').value===old){$('editCategory').innerHTML='';db.categories.forEach(x=>$('editCategory').add(new Option(x,x)));$('editCategory').value=name;}
+ render();$('category').value=name;
+}
+function deleteCategory(index){
+ const name=db.categories[index];if(name===undefined)return;
+ if(db.categories.length===1){alert('Cần giữ ít nhất một danh mục.');return}
+ const count=Object.values(db.months).reduce((n,m)=>n+(m.expenses||[]).filter(x=>x.category===name).length,0);
+ if(count){alert(`Danh mục "${name}" đang có ${count} khoản chi. Hãy đổi danh mục của những khoản đó trước khi xóa.`);return}
+ if(!confirm(`Xóa danh mục "${name}"?`))return;
+ db.categories.splice(index,1);render();
+}
+$('toggleCategories').onclick=()=>{
+ const content=$('categoryManageContent'), opening=content.hidden;
+ content.hidden=!opening;$('toggleCategories').setAttribute('aria-expanded',String(opening));
+ $('toggleCategories').textContent=opening?'⚙ Thu gọn ▴':'⚙ Quản lý danh mục ▾';
+ if(opening)$('newCategoryName').focus();
+};
+$('addCategoryForm').onsubmit=e=>{
+ e.preventDefault();const name=$('newCategoryName').value.trim();if(!name)return;
+ if(db.categories.some(x=>x.toLocaleLowerCase('vi')===name.toLocaleLowerCase('vi'))){alert('Danh mục này đã tồn tại.');return}
+ db.categories.push(name);$('newCategoryName').value='';render();$('category').value=name;$('newCategoryName').focus();
+};
+
+$('incomeForm').onsubmit=e=>{e.preventDefault();current().income.push({name:$('incomeName').value.trim(),amount:num($('incomeAmount').value),type:$('incomeType').value,fee:$('incomeType').value==='debt'?num($('withdrawFee').value):0});e.target.reset();render()};$('expenseForm').onsubmit=e=>{e.preventDefault();current().expenses.push({date:$('date').value,name:$('expenseName').value.trim(),amount:num($('expenseAmount').value),source:$('source').value,category:$('category').value});$('expenseName').value='';$('expenseAmount').value='';render()};window.delIncome=i=>{if(confirm('Xóa khoản thu này?')){current().income.splice(i,1);render()}};window.delExpense=i=>{if(confirm('Xóa khoản chi này?')){current().expenses.splice(i,1);render()}};let activeEdit=null,previousFocus=null;
+const customSources=['Ngân hàng','Tiền mặt','Ví điện tử','Thẻ tín dụng'];
+const customCategories=db.categories;
+function optionsFor(selectId,base,value){
+ const all=[...new Set([...base,...Array.from($('source').options).map(o=>o.value).filter(Boolean),...(selectId==='editSource'?Object.values(db.months).flatMap(m=>(m.expenses||[]).map(x=>x.source)):[])].filter(Boolean))];
+ const vals=selectId==='editCategory'?[...db.categories]:all;
+ $(selectId).innerHTML=vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+ if(value&&!vals.includes(value))$(selectId).add(new Option(value,value));
+ $(selectId).value=value||vals[0]||'';
+}
+function openEditor(kind,i){
+ const items=kind==='income'?current().income:current().expenses,x=items[i];if(!x)return;
+ activeEdit={kind,i,month:$('month').value};previousFocus=document.activeElement;
+ $('editTitle').textContent=kind==='income'?'Sửa tiền vào':'Sửa khoản chi';
+ $('editName').value=x.name||'';$('editAmount').value=Number(x.amount||0).toLocaleString('vi-VN');
+ const isExpense=kind==='expense';
+ ['editDateField','editSourceField','editCategoryField'].forEach(id=>$(id).hidden=!isExpense);
+ $('editTypeField').hidden=isExpense;$('editFeeField').hidden=isExpense||x.type!=='debt';
+ if(isExpense){$('editDate').value=x.date||`${$('month').value}-01`;optionsFor('editSource',customSources,x.source);optionsFor('editCategory',customCategories,x.category)}
+ else{$('editType').value=x.type||'income';$('editFee').value=Number(x.fee||0).toLocaleString('vi-VN')}
+ $('editModal').classList.add('open');document.body.style.overflow='hidden';$('editName').focus();
+}
+function closeEditor(){$('editModal').classList.remove('open');document.body.style.overflow='';activeEdit=null;if(previousFocus?.isConnected)previousFocus.focus()}
+window.editIncome=i=>openEditor('income',i);window.editExpense=i=>openEditor('expense',i);
+$('editAmount').addEventListener('input',e=>formatInput(e.target));$('editFee').addEventListener('input',e=>formatInput(e.target));
+$('editType').addEventListener('change',()=>{$('editFeeField').hidden=$('editType').value!=='debt'});
+$('editForm').addEventListener('submit',e=>{
+ e.preventDefault();if(!activeEdit)return;let {kind,i,month}=activeEdit;
+ let x=db.months[month]?.[kind==='income'?'income':'expenses']?.[i];if(!x)return;
+ const name=$('editName').value.trim(),amount=num($('editAmount').value);if(!name||amount<=0){alert('Vui lòng nhập tên và số tiền lớn hơn 0.');return}
+ x.name=name;x.amount=amount;
+ if(kind==='income'){x.type=$('editType').value;x.fee=x.type==='debt'?num($('editFee').value):0}
+ else{x.date=$('editDate').value;x.source=$('editSource').value;x.category=$('editCategory').value;if(!x.date){alert('Vui lòng chọn ngày.');return}}
+ closeEditor();render();
+});
+$('deleteFromEdit').onclick=()=>{if(!activeEdit)return;const {kind,i,month}=activeEdit;if(!confirm('Xóa khoản này?'))return;db.months[month][kind==='income'?'income':'expenses'].splice(i,1);closeEditor();render()};
+$('cancelEdit').onclick=closeEditor;$('closeEdit').onclick=closeEditor;
+$('editModal').addEventListener('mousedown',e=>{if(e.target===$('editModal'))closeEditor()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('editModal').classList.contains('open'))closeEditor()});
+function moveMonth(delta){let[y,m]=$('month').value.split('-').map(Number);m+=delta;if(m<1){m=12;y--}if(m>12){m=1;y++}$('month').value=`${y}-${pad(m)}`;render()};$('prev').onclick=()=>moveMonth(-1);$('next').onclick=()=>moveMonth(1);$('month').onchange=render;$('saveBtn').onclick=()=>{save();$('saveStatus').textContent='Đã lưu thủ công lúc '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});};$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='expense-tracker-backup.json';a.click();URL.revokeObjectURL(a.href)};// Tự chuyển ngày/tháng theo lịch máy, kể cả khi trang mở xuyên đêm.
+// Không ghi đè khi người dùng chủ động chọn ngày/tháng khác.
+let lastAutoDate = $('date').value;
+let lastAutoMonth = $('month').value;
+function refreshCalendarDay(){
+ const now = new Date();
+ const newDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+ const newMonth = newDate.slice(0,7);
+ if(newDate === lastAutoDate) return;
+ const autoDate = $('date').value === lastAutoDate;
+ const autoMonth = $('month').value === lastAutoMonth;
+ if(autoDate) $('date').value = newDate;
+ if(autoMonth && newMonth !== lastAutoMonth){ $('month').value = newMonth; render(); }
+ lastAutoDate = newDate;
+ lastAutoMonth = newMonth;
+}
+setInterval(refreshCalendarDay, 15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshCalendarDay()});
+window.addEventListener('focus',refreshCalendarDay);
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.months)throw 0;db=x;initializeCategories();save();render();alert('Đã khôi phục dữ liệu.')}catch{alert('File backup không hợp lệ.')}};r.readAsText(f)};render();
+</script>
+</body></html>
